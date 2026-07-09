@@ -1,5 +1,5 @@
 import pandas as pd
-df = pd.read_csv("data/raw_hotels.csv")
+df = pd.read_csv("data/raw_data/raw_hotels.csv")
 
 df = df.dropna(subset = "Hotel Name")
 
@@ -27,5 +27,5 @@ df["Website URL"] = df["Website URL"].fillna("No website available")
 df = df.drop(columns=["Room Types", "Rating", "Review Summary", "Nearby Attractions", "Image URL"])
 
 
-df.to_csv("data/cleaned_hotels.csv", index=False)
+df.to_csv("data/clean_data/cleaned_hotels.csv", index=False)
 print(f"Cleaned dataset: {len(df)} hotels")

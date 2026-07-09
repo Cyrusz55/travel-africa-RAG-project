@@ -44,7 +44,7 @@ OVERPASS_URL = "https://overpass-api.de/api/interpreter"
 
 
 def geocode_location(location):
-    """Get (lat, lon) for a place name using Nominatim."""
+
     params = {"q": location, "format": "json", "limit": 1}
     resp = requests.get(NOMINATIM_URL, params=params, headers=HEADERS, timeout=20)
     resp.raise_for_status()
@@ -55,12 +55,7 @@ def geocode_location(location):
 
 
 def query_overpass_hotels(lat, lon, radius_m=15000, max_retries=4):
-    """Query Overpass for tourism=hotel nodes/ways within radius_m of (lat, lon).
 
-    Retries on 429 (rate limited) and 504 (server overloaded/timeout) with
-    increasing wait times, since the free public Overpass server is shared
-    and gets busy. Gives up after max_retries and returns [].
-    """
     query = f"""
     [out:json][timeout:60];
     (
@@ -83,7 +78,7 @@ def query_overpass_hotels(lat, lon, radius_m=15000, max_retries=4):
             wait *= 2
             continue
 
-        # Any other error (400 = bad query, etc.) - no point retrying
+        
         print(f"Overpass error {resp.status_code}: {resp.text[:200]}")
         return []
 
@@ -171,7 +166,7 @@ def main():
 
         # Save a checkpoint after every location so a crash/rate-limit
         # doesn't lose everything collected so far.
-        write_csv(all_hotels, filename="data/raw_hotels_checkpoint.csv")
+        write_csv(all_hotels, filename="data/raw_data/raw_hotels_checkpoint.csv")
 
         # Nominatim usage policy: max 1 request/sec. Overpass is shared/free,
         # so we space requests out more to avoid triggering 429s.

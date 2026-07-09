@@ -1,2 +1,18 @@
-\data\raw_data
-\data\clean_data
+# API keys & secrets
+.secrets
+.env
+__pycache__/
+*.pyc
+
+# ChromaDB vector store (regenerates from data)
+chroma_db/
+
+# HuggingFace / ONNX model cache
+~/.cache/chroma/
+
+# OS junk
+Thumbs.db
+.DS_Store
+
+# Jupyter checkpoints
+.ipynb_checkpoints/

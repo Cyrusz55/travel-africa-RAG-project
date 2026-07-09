@@ -10,10 +10,9 @@
   <link rel="stylesheet" href="../static/css/styles.css">
 </head>
 <body>
-  <main class="hero-shell" aria-label="Travel Africa trip planning assistant landing page">
+  <main class="hero-shell" aria-label="Travel Africa trip planning assistant">
     <header class="site-header">
-      <a class="brand" href="#" aria-label="Travel Africa home">Travel Africa<span></span></a>
-
+      <a class="brand" href="#" id="brand-home" aria-label="Travel Africa home">Travel Africa<span></span></a>
       <nav class="top-actions" aria-label="User preferences">
         <button class="pill-control" type="button">KSh <span aria-hidden="true">⌄</span></button>
         <button class="pill-control lang" type="button"><span class="flag" aria-hidden="true"></span> EN <span aria-hidden="true">⌄</span></button>
@@ -24,7 +23,8 @@
       </nav>
     </header>
 
-    <section class="hero-grid">
+    <!-- Landing view -->
+    <section class="hero-grid" id="landing-view">
       <div class="hero-copy">
         <h1>Hey explorer,<br>where are we<br>going today?</h1>
         <span class="spark spark-one" aria-hidden="true"></span>
@@ -33,9 +33,9 @@
 
         <p>Discover Kenya &amp; East Africa with live prices<br>and expert trip planning.</p>
 
-        <form class="prompt-card" action="#" method="get" aria-label="Trip planning prompt">
+        <form class="prompt-card" id="prompt-form" action="#" method="get" aria-label="Trip planning prompt">
           <label class="sr-only" for="travel-prompt">Describe your ideal trip</label>
-          <input id="travel-prompt" name="prompt" type="text" value="6 days in Kenya: safari, coast, culture">
+          <input id="travel-prompt" name="prompt" type="text" placeholder="e.g. 6 days in Kenya: safari, coast, culture">
           <div class="prompt-tools" aria-label="Prompt tools">
             <button type="button" aria-label="Attach a file">⌕</button>
             <button type="button" aria-label="Use voice input">♩</button>
@@ -44,27 +44,206 @@
         </form>
 
         <div class="quick-actions" aria-label="Suggested prompts">
-          <button type="button"><span aria-hidden="true">▣</span>Create a new trip</button>
-          <button type="button"><span aria-hidden="true">🌴</span>Explore Kenya</button>
-          <button type="button"><span aria-hidden="true">♣</span>Plan a safari</button>
-          <button type="button"><span aria-hidden="true">▲</span>East Africa escapes</button>
+          <button type="button" data-prompt="Plan a 4-day safari in the Maasai Mara"><span aria-hidden="true">♣</span>Plan a safari</button>
+          <button type="button" data-prompt="Find beach hotels in Mombasa and Diani"><span aria-hidden="true">🌴</span>Explore Kenya</button>
+          <button type="button" data-prompt="I want a luxury trip combining Nairobi and the coast"><span aria-hidden="true">▣</span>Create a new trip</button>
+          <button type="button" data-prompt="Show me hotels in Zanzibar, Arusha, and Kampala"><span aria-hidden="true">▲</span>East Africa escapes</button>
         </div>
 
-        <a class="help-link" href="#features">See how I can help you <span aria-hidden="true">↓</span></a>
+        <!-- Chat preview bubble -->
+        <div class="chat-preview" aria-label="Example conversation">
+          <div class="chat-bubble user-bubble">What hotels are near Nairobi National Park?</div>
+          <div class="chat-bubble ai-bubble">I found hotels near Nairobi National Park for you:</div>
+          <div class="chat-bubble ai-bubble bubble-slim">Ololo Safari Lodge — 5 min from the park, safari lodge feel</div>
+          <div class="chat-bubble ai-bubble bubble-slim">Safari Park Hotel — Thika Road, family-friendly with wildlife theme</div>
+        </div>
       </div>
 
       <div class="photo-collage" aria-label="Kenya and East Africa destination collage">
         <figure class="blob blob-safari">
-          <img src="https://images.unsplash.com/photo-1547970810-dc1eac37d174?auto=format&fit=crop&w=1000&q=85" alt="Elephants walking across an East African savanna with a mountain in the distance">
+          <img src="https://images.unsplash.com/photo-1547970810-dc1eac37d174?auto=format&fit=crop&w=1000&q=85" alt="Elephants walking across an East African savanna">
         </figure>
         <figure class="blob blob-coast">
-          <img src="https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?auto=format&fit=crop&w=900&q=85" alt="Turquoise East African coastline with palms and a beach cottage">
+          <img src="https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?auto=format&fit=crop&w=900&q=85" alt="Turquoise East African coastline with palms">
         </figure>
         <figure class="blob blob-lake">
-          <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1100&q=85" alt="Blue lake surrounded by lush green hills and bright flowers">
+          <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1100&q=85" alt="Blue lake surrounded by lush green hills">
         </figure>
       </div>
     </section>
+
+    <!-- Chat view (hidden initially) -->
+    <section class="chat-view" id="chat-view" style="display:none">
+      <div class="chat-header">
+        <button type="button" id="new-chat-btn" class="new-chat-btn">← New chat</button>
+      </div>
+      <div class="chat-messages" id="chat-messages" aria-live="polite" aria-relevant="additions"></div>
+      <div class="chat-input-bar">
+        <input type="text" id="chat-input" placeholder="Ask about hotels, trips, or destinations...">
+        <button class="send-chat" id="send-chat" aria-label="Send message">➤</button>
+      </div>
+    </section>
   </main>
+
+<script>
+ const API_URL = "http://localhost:8000";
+ const landingView = document.getElementById("landing-view");
+ const chatView = document.getElementById("chat-view");
+ const chatMessages = document.getElementById("chat-messages");
+ const chatInput = document.getElementById("chat-input");
+ const sendChat = document.getElementById("send-chat");
+ const promptForm = document.getElementById("prompt-form");
+ const promptInput = document.getElementById("travel-prompt");
+ const newChatBtn = document.getElementById("new-chat-btn");
+ const brandHome = document.getElementById("brand-home");
+
+ let isSending = false; // guards against double-submits / overlapping requests
+
+ // ---- Quick action buttons fill the prompt ----
+ document.querySelectorAll(".quick-actions button").forEach(btn => {
+   btn.addEventListener("click", () => {
+     promptInput.value = btn.dataset.prompt;
+   });
+ });
+
+ // ---- Type text one word at a time ----
+ function typeAnswer(element, text, speed = 30) {
+   element.innerHTML = "";
+   const words = text.split(" ");
+   let i = 0;
+   function next() {
+     if (i < words.length) {
+       element.innerHTML += (i > 0 ? " " : "") + words[i];
+       i++;
+       setTimeout(next, speed);
+     }
+   }
+   next();
+ }
+
+ // ---- Add a plain (non-typed) message bubble to chat ----
+ function addMessage(text, isUser) {
+   const div = document.createElement("div");
+   div.className = "chat-msg " + (isUser ? "user-msg" : "ai-msg");
+   if (!isUser) {
+     const p = document.createElement("p");
+     div.appendChild(p);
+     chatMessages.appendChild(div);
+     chatMessages.scrollTop = chatMessages.scrollHeight;
+     typeAnswer(p, text);
+   } else {
+     div.textContent = text;
+     chatMessages.appendChild(div);
+   }
+   chatMessages.scrollTop = chatMessages.scrollHeight;
+ }
+
+ // ---- Add the "Thinking..." loading bubble, return it so caller can remove it ----
+ function addLoadingBubble() {
+   const loadingDiv = document.createElement("div");
+   loadingDiv.className = "chat-msg ai-msg";
+   loadingDiv.innerHTML = "<p class='loading-dots'>Thinking<span>.</span><span>.</span><span>.</span></p>";
+   chatMessages.appendChild(loadingDiv);
+   chatMessages.scrollTop = chatMessages.scrollHeight;
+   return loadingDiv;
+ }
+
+ // ---- Switch from landing to chat view ----
+ function switchToChat() {
+   landingView.style.display = "none";
+   chatView.style.display = "flex";
+ }
+
+ // ---- Reset back to landing view ----
+ function resetToLanding() {
+   chatMessages.innerHTML = "";
+   chatView.style.display = "none";
+   landingView.style.display = "grid";
+   promptInput.value = "";
+   promptInput.focus();
+ }
+
+ // ---- Toggle input controls while a request is in flight ----
+ function setSending(state) {
+   isSending = state;
+   sendChat.disabled = state;
+   chatInput.disabled = state;
+ }
+
+ // ---- Single source of truth for asking a question and rendering the answer ----
+ async function askQuestion(question) {
+   if (!question || isSending) return;
+
+   if (landingView.style.display !== "none") switchToChat();
+
+   addMessage(question, true);
+   setSending(true);
+   const loadingEl = addLoadingBubble();
+
+   try {
+     const res = await fetch(API_URL + "/ask", {
+       method: "POST",
+       headers: {"Content-Type": "application/json"},
+       body: JSON.stringify({question})
+     });
+
+     if (!res.ok) {
+       throw new Error(`Server returned ${res.status}`);
+     }
+
+     const data = await res.json();
+     loadingEl.remove();
+
+     let answerText = (data.answer || "Sorry, I didn't get a usable answer for that.").replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+     if (data.sources?.length > 0) {
+       answerText += "\n\n---\nSources:";
+       data.sources.forEach(s => {
+         answerText += `\n• ${s.hotel_name} – ${s.location}`;
+       });
+     }
+
+     const answerDiv = document.createElement("div");
+     answerDiv.className = "chat-msg ai-msg";
+     const p = document.createElement("p");
+     answerDiv.appendChild(p);
+     chatMessages.appendChild(answerDiv);
+     typeAnswer(p, answerText);
+
+   } catch (err) {
+     loadingEl.remove();
+     addMessage("Sorry, something went wrong reaching the server: " + err.message, false);
+   } finally {
+     setSending(false);
+     chatMessages.scrollTop = chatMessages.scrollHeight;
+   }
+ }
+
+ // ---- Send button / Enter (landing page prompt form) ----
+ promptForm.addEventListener("submit", (e) => {
+   e.preventDefault();
+   const question = promptInput.value.trim();
+   promptInput.value = "";
+   askQuestion(question);
+ });
+
+ // ---- Send button (chat view) ----
+ sendChat.addEventListener("click", () => {
+   const question = chatInput.value.trim();
+   chatInput.value = "";
+   askQuestion(question);
+ });
+
+ // ---- Enter key in chat input ----
+ chatInput.addEventListener("keydown", (e) => {
+   if (e.key === "Enter") sendChat.click();
+ });
+
+ // ---- New chat / brand link resets to landing ----
+ newChatBtn.addEventListener("click", resetToLanding);
+ brandHome.addEventListener("click", (e) => {
+   e.preventDefault();
+   resetToLanding();
+ });
+ </script>
 </body>
 </html>
