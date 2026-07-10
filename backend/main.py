@@ -27,6 +27,7 @@ class Question(BaseModel):
 class TripPlan(BaseModel):
     preferences: str
 
+@app.head("/")
 @app.get("/", response_class=HTMLResponse)
 def serve_frontend():
     return Path("templates/index.html").read_text(encoding="utf-8")
