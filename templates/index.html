@@ -3,110 +3,290 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Travel Africa RAG Template</title>
+  <title>Travel Africa — AI Trip Planner for Kenya & East Africa</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../static/css/styles.css">
+  <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
-  <main class="hero-shell" aria-label="Travel Africa trip planning assistant">
-    <header class="site-header">
-      <a class="brand" href="#" id="brand-home" aria-label="Travel Africa home">Travel Africa<span></span></a>
-      <nav class="top-actions" aria-label="User preferences">
-        <button class="pill-control" type="button">KSh <span aria-hidden="true">⌄</span></button>
-        <button class="pill-control lang" type="button"><span class="flag" aria-hidden="true"></span> EN <span aria-hidden="true">⌄</span></button>
-        <button class="profile-control" type="button" aria-label="Open profile menu">
-          <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80" alt="Smiling traveler profile">
-          <span aria-hidden="true">⌄</span>
-        </button>
-      </nav>
-    </header>
 
-    <!-- Landing view -->
-    <section class="hero-grid" id="landing-view">
-      <div class="hero-copy">
-        <h1>Hey explorer,<br>where are we<br>going today?</h1>
-        <span class="spark spark-one" aria-hidden="true"></span>
-        <span class="spark spark-two" aria-hidden="true"></span>
-        <span class="spark spark-three" aria-hidden="true"></span>
+  <!-- ==================== FULL-SCREEN CHAT OVERLAY ==================== -->
+  <div class="chat-overlay" id="chat-overlay">
+    <div class="chat-header">
+      <a class="brand" href="#" id="chat-brand-home" aria-label="Travel Africa home">Travel Africa<span></span></a>
+      <button type="button" id="chat-new-btn" class="pill-close">← Back</button>
+    </div>
+    <div class="chat-messages" id="chat-messages" aria-live="polite" aria-relevant="additions"></div>
+    <div class="chat-input-bar">
+      <input type="text" id="chat-input" placeholder="Ask about hotels, trips, or destinations...">
+      <button class="send-chat" id="send-chat" aria-label="Send message">➤</button>
+    </div>
+  </div>
 
-        <p>Discover Kenya &amp; East Africa with live prices<br>and expert trip planning.</p>
+  <!-- ==================== LANDING PAGE ==================== -->
 
-        <form class="prompt-card" id="prompt-form" action="#" method="get" aria-label="Trip planning prompt">
-          <label class="sr-only" for="travel-prompt">Describe your ideal trip</label>
-          <input id="travel-prompt" name="prompt" type="text" placeholder="e.g. 6 days in Kenya: safari, coast, culture">
-          <div class="prompt-tools" aria-label="Prompt tools">
-            <button type="button" aria-label="Attach a file">⌕</button>
-            <button type="button" aria-label="Use voice input">♩</button>
-            <button class="send" type="submit" aria-label="Send prompt">➤</button>
+  <!-- Header / Nav -->
+  <header class="site-header">
+    <a class="brand" href="#" id="brand-home" aria-label="Travel Africa home">Travel Africa<span></span></a>
+    <nav class="top-actions" aria-label="User preferences">
+      <button class="pill-control" type="button">KSh <span aria-hidden="true">⌄</span></button>
+      <button class="pill-control lang" type="button"><span class="flag" aria-hidden="true"></span> EN <span aria-hidden="true">⌄</span></button>
+      <button class="profile-control" type="button" aria-label="Open profile menu">
+        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80" alt="Smiling traveler profile">
+        <span aria-hidden="true">⌄</span>
+      </button>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- ===== HERO SECTION ===== -->
+    <section class="section-hero">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1>Hey explorer,<br>where are we<br>going today?</h1>
+          <span class="spark spark-one" aria-hidden="true"></span>
+          <span class="spark spark-two" aria-hidden="true"></span>
+          <span class="spark spark-three" aria-hidden="true"></span>
+
+          <p>Discover Kenya &amp; East Africa with live prices<br>and expert trip planning.</p>
+
+          <form class="prompt-card" id="prompt-form" action="#" method="get" aria-label="Trip planning prompt">
+            <label class="sr-only" for="travel-prompt">Describe your ideal trip</label>
+            <input id="travel-prompt" name="prompt" type="text" placeholder="e.g. 6 days in Kenya: safari, coast, culture">
+            <div class="prompt-tools" aria-label="Prompt tools">
+              <button type="button" aria-label="Attach a file">⌕</button>
+              <button type="button" aria-label="Use voice input">♩</button>
+              <button class="send" type="submit" aria-label="Send prompt">➤</button>
+            </div>
+          </form>
+
+          <div class="quick-actions" aria-label="Suggested prompts">
+            <button type="button" data-prompt="Plan a 4-day safari in the Maasai Mara"><span aria-hidden="true">♣</span>Plan a safari</button>
+            <button type="button" data-prompt="Find beach hotels in Mombasa and Diani"><span aria-hidden="true">🌴</span>Explore Kenya</button>
+            <button type="button" data-prompt="I want a luxury trip combining Nairobi and the coast"><span aria-hidden="true">▣</span>Create a new trip</button>
+            <button type="button" data-prompt="Show me hotels in Zanzibar, Arusha, and Kampala"><span aria-hidden="true">▲</span>East Africa escapes</button>
           </div>
-        </form>
-
-        <div class="quick-actions" aria-label="Suggested prompts">
-          <button type="button" data-prompt="Plan a 4-day safari in the Maasai Mara"><span aria-hidden="true">♣</span>Plan a safari</button>
-          <button type="button" data-prompt="Find beach hotels in Mombasa and Diani"><span aria-hidden="true">🌴</span>Explore Kenya</button>
-          <button type="button" data-prompt="I want a luxury trip combining Nairobi and the coast"><span aria-hidden="true">▣</span>Create a new trip</button>
-          <button type="button" data-prompt="Show me hotels in Zanzibar, Arusha, and Kampala"><span aria-hidden="true">▲</span>East Africa escapes</button>
         </div>
 
-        <!-- Chat preview bubble -->
-        <div class="chat-preview" aria-label="Example conversation">
-          <div class="chat-bubble user-bubble">What hotels are near Nairobi National Park?</div>
-          <div class="chat-bubble ai-bubble">I found hotels near Nairobi National Park for you:</div>
-          <div class="chat-bubble ai-bubble bubble-slim">Ololo Safari Lodge — 5 min from the park, safari lodge feel</div>
-          <div class="chat-bubble ai-bubble bubble-slim">Safari Park Hotel — Thika Road, family-friendly with wildlife theme</div>
+        <div class="photo-collage" aria-label="Kenya and East Africa destination collage">
+          <figure class="blob blob-safari">
+            <img src="https://images.unsplash.com/photo-1547970810-dc1eac37d174?auto=format&fit=crop&w=1000&q=85" alt="Elephants walking across an East African savanna">
+          </figure>
+          <figure class="blob blob-coast">
+            <img src="https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?auto=format&fit=crop&w=900&q=85" alt="Turquoise East African coastline with palms">
+          </figure>
+          <figure class="blob blob-lake">
+            <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1100&q=85" alt="Blue lake surrounded by lush green hills">
+          </figure>
         </div>
-      </div>
-
-      <div class="photo-collage" aria-label="Kenya and East Africa destination collage">
-        <figure class="blob blob-safari">
-          <img src="https://images.unsplash.com/photo-1547970810-dc1eac37d174?auto=format&fit=crop&w=1000&q=85" alt="Elephants walking across an East African savanna">
-        </figure>
-        <figure class="blob blob-coast">
-          <img src="https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?auto=format&fit=crop&w=900&q=85" alt="Turquoise East African coastline with palms">
-        </figure>
-        <figure class="blob blob-lake">
-          <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1100&q=85" alt="Blue lake surrounded by lush green hills">
-        </figure>
       </div>
     </section>
 
-    <!-- Chat view (hidden initially) -->
-    <section class="chat-view" id="chat-view" style="display:none">
-      <div class="chat-header">
-        <button type="button" id="new-chat-btn" class="new-chat-btn">← New chat</button>
-      </div>
-      <div class="chat-messages" id="chat-messages" aria-live="polite" aria-relevant="additions"></div>
-      <div class="chat-input-bar">
-        <input type="text" id="chat-input" placeholder="Ask about hotels, trips, or destinations...">
-        <button class="send-chat" id="send-chat" aria-label="Send message">➤</button>
+    <!-- ===== SECTION BRIDGE ===== -->
+    <div class="hero-bridge" aria-hidden="true">
+      <svg class="bridge-svg" viewBox="0 0 1440 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="0" width="1440" height="48" fill="#f9f1e7"/>
+        <path d="M0,48 C360,12 1080,12 1440,48 L1440,48 L0,48 Z" fill="#efe3cf"/>
+      </svg>
+    </div>
+
+    <!-- ===== CONVERSATION DEMO SECTION ===== -->
+    <section class="section-demo">
+      <div class="section-container demo-layout">
+        <div class="demo-copy">
+          <div class="section-label">See it in action</div>
+          <h2 class="section-heading">How TravelAfrica plans your trip</h2>
+          <p class="section-sub">Just tell us what you're looking for — our AI searches thousands of hotels and destinations to build your perfect itinerary.</p>
+
+          <div class="demo-chat" aria-label="Example AI conversation">
+            <div class="demo-bubble demo-user">What hotels are near Nairobi National Park?</div>
+            <div class="demo-bubble demo-ai">I found these hotels near Nairobi National Park for you:</div>
+            <div class="demo-bubble demo-ai demo-slim">Ololo Safari Lodge — 5 min from the park, safari lodge feel</div>
+            <div class="demo-bubble demo-ai demo-slim">Safari Park Hotel — Thika Road, family-friendly with wildlife theme</div>
+            <div class="demo-bubble demo-ai">Both offer great access to the park. Ololo is closer and more intimate; Safari Park has more amenities. Would you like details on either?</div>
+          </div>
+        </div>
+
+        <div class="demo-visual" aria-label="AI trip planning interface preview">
+          <!-- Browser chrome mockup -->
+          <div class="browser-mockup">
+            <div class="browser-bar">
+              <span class="browser-dot red"></span>
+              <span class="browser-dot yellow"></span>
+              <span class="browser-dot green"></span>
+              <span class="browser-url">travelafrica.ai/trip/kenya-safari-coast</span>
+            </div>
+            <div class="browser-content">
+              <!-- Trip header -->
+              <div class="trip-header">
+                <div class="trip-title-line">
+                  <span class="trip-icon">🗺️</span>
+                  <div>
+                    <div class="trip-name">6-Day Kenya Explorer</div>
+                    <div class="trip-sub">Nairobi → Maasai Mara → Diani Beach</div>
+                  </div>
+                </div>
+                <div class="trip-price">$1,850</div>
+              </div>
+
+              <!-- Itinerary cards -->
+              <div class="itinerary-timeline">
+                <div class="itinerary-item">
+                  <div class="itinerary-dot"></div>
+                  <div class="itinerary-card">
+                    <div class="itinerary-day">Day 1 — Nairobi</div>
+                    <div class="itinerary-desc">Arrive JKIA, private transfer to Nairobi Serena Hotel</div>
+                  </div>
+                </div>
+                <div class="itinerary-item">
+                  <div class="itinerary-dot"></div>
+                  <div class="itinerary-card">
+                    <div class="itinerary-day">Day 2–3 — Maasai Mara</div>
+                    <div class="itinerary-desc">Full-day game drives, overnight at Ololo Safari Lodge</div>
+                  </div>
+                </div>
+                <div class="itinerary-item">
+                  <div class="itinerary-dot"></div>
+                  <div class="itinerary-card">
+                    <div class="itinerary-day">Day 4–6 — Diani Beach</div>
+                    <div class="itinerary-desc">Coastal resort stay, snorkeling, sunsets at Baobab Beach</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- AI reasoning panel -->
+              <div class="ai-panel">
+                <div class="ai-panel-header">
+                  <span class="ai-pulse"></span>
+                  AI Trip Planner
+                </div>
+                <div class="ai-panel-body">
+                  <p>✓ 4 hotels matched your <strong>luxury safari + beach</strong> criteria</p>
+                  <p>✓ Flights available from <strong>$680</strong> round trip</p>
+                  <p>✓ Optimal route: Nairobi → fly to Mara → road to Diani</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Floating stat badges -->
+          <div class="stat-badge stat-hotels" aria-hidden="true">
+            <span class="stat-number">1,240+</span>
+            <span class="stat-label">Hotels</span>
+          </div>
+          <div class="stat-badge stat-destinations" aria-hidden="true">
+            <span class="stat-number">47</span>
+            <span class="stat-label">Destinations</span>
+          </div>
+        </div>
       </div>
     </section>
+
+    <!-- ===== FEATURED DESTINATIONS ===== -->
+    <section class="section-destinations">
+      <div class="section-container">
+        <div class="section-label">Popular destinations</div>
+        <h2 class="section-heading">Places travelers love</h2>
+        <p class="section-sub">From the Maasai Mara to Zanzibar's beaches — explore East Africa's most sought-after destinations.</p>
+
+        <div class="dest-grid">
+          <article class="dest-card">
+            <div class="dest-img" style="background-image: url('https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=800&q=80')"></div>
+            <div class="dest-body">
+              <h3>Maasai Mara</h3>
+              <p>The Great Migration, big five safaris, and endless savanna views.</p>
+              <span class="dest-tag">Kenya</span>
+            </div>
+          </article>
+          <article class="dest-card">
+            <div class="dest-img" style="background-image: url('https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?auto=format&fit=crop&w=800&q=80')"></div>
+            <div class="dest-body">
+              <h3>Diani Beach</h3>
+              <p>White sand, coral reefs, and some of the best beach resorts on the continent.</p>
+              <span class="dest-tag">Kenya</span>
+            </div>
+          </article>
+          <article class="dest-card">
+            <div class="dest-img" style="background-image: url('https://images.unsplash.com/photo-1547970810-dc1eac37d174?auto=format&fit=crop&w=800&q=80')"></div>
+            <div class="dest-body">
+              <h3>Zanzibar</h3>
+              <p>Stone Town, spice tours, and turquoise waters just a short flight away.</p>
+              <span class="dest-tag">Tanzania</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TESTIMONIALS ===== -->
+    <section class="section-testimonials">
+      <div class="section-container">
+        <div class="section-label">What travelers say</div>
+        <h2 class="section-heading">Trusted by explorers</h2>
+
+        <div class="testimonial-grid">
+          <blockquote class="testimonial-card">
+            <p>"Found us a boutique lodge in the Mara that wasn't on any booking site. Unbelievable."</p>
+            <footer>— Sarah, Nairobi</footer>
+          </blockquote>
+          <blockquote class="testimonial-card">
+            <p>"Planned our entire honeymoon — Nairobi, coast, Zanzibar — in under five minutes."</p>
+            <footer>— James &amp; Amina, London</footer>
+          </blockquote>
+          <blockquote class="testimonial-card">
+            <p>"The hotel recommendations were spot-on. Saved us hours of scrolling."</p>
+            <footer>— David, Kampala</footer>
+          </blockquote>
+        </div>
+      </div>
+    </section>
+
   </main>
 
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p class="footer-brand">Travel Africa</p>
+      <p class="footer-tagline">AI-powered trip planning for Kenya &amp; East Africa</p>
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a href="#">About</a>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Contact</a>
+      </nav>
+      <p class="footer-copy">&copy; 2026 Travel Africa. Built with DeepSeek &amp; ChromaDB.</p>
+    </div>
+  </footer>
+
 <script>
- const API_URL = "http://localhost:8000";
- const landingView = document.getElementById("landing-view");
- const chatView = document.getElementById("chat-view");
+ const API_URL = "";
+
+ // Chat overlay elements
+ const chatOverlay = document.getElementById("chat-overlay");
  const chatMessages = document.getElementById("chat-messages");
  const chatInput = document.getElementById("chat-input");
  const sendChat = document.getElementById("send-chat");
+ const chatNewBtn = document.getElementById("chat-new-btn");
+ const chatBrandHome = document.getElementById("chat-brand-home");
+
+ // Landing elements
  const promptForm = document.getElementById("prompt-form");
  const promptInput = document.getElementById("travel-prompt");
- const newChatBtn = document.getElementById("new-chat-btn");
  const brandHome = document.getElementById("brand-home");
 
- let isSending = false; // guards against double-submits / overlapping requests
+ let isSending = false;
 
  // ---- Quick action buttons fill the prompt ----
  document.querySelectorAll(".quick-actions button").forEach(btn => {
    btn.addEventListener("click", () => {
      promptInput.value = btn.dataset.prompt;
+     promptInput.focus();
    });
  });
 
- // ---- Type text one word at a time ----
+ // ---- Typewriter effect ----
  function typeAnswer(element, text, speed = 30) {
    element.innerHTML = "";
    const words = text.split(" ");
@@ -121,7 +301,7 @@
    next();
  }
 
- // ---- Add a plain (non-typed) message bubble to chat ----
+ // ---- Add a message bubble to the chat overlay ----
  function addMessage(text, isUser) {
    const div = document.createElement("div");
    div.className = "chat-msg " + (isUser ? "user-msg" : "ai-msg");
@@ -138,7 +318,7 @@
    chatMessages.scrollTop = chatMessages.scrollHeight;
  }
 
- // ---- Add the "Thinking..." loading bubble, return it so caller can remove it ----
+ // ---- Loading bubble ----
  function addLoadingBubble() {
    const loadingDiv = document.createElement("div");
    loadingDiv.className = "chat-msg ai-msg";
@@ -148,34 +328,29 @@
    return loadingDiv;
  }
 
- // ---- Switch from landing to chat view ----
- function switchToChat() {
-   landingView.style.display = "none";
-   chatView.style.display = "flex";
+ // ---- Open / close chat overlay ----
+ function openChat() {
+   chatOverlay.classList.add("active");
+   chatInput.focus();
  }
 
- // ---- Reset back to landing view ----
- function resetToLanding() {
+ function closeChat() {
+   chatOverlay.classList.remove("active");
    chatMessages.innerHTML = "";
-   chatView.style.display = "none";
-   landingView.style.display = "grid";
-   promptInput.value = "";
-   promptInput.focus();
  }
 
- // ---- Toggle input controls while a request is in flight ----
+ // ---- Toggle controls ----
  function setSending(state) {
    isSending = state;
    sendChat.disabled = state;
    chatInput.disabled = state;
  }
 
- // ---- Single source of truth for asking a question and rendering the answer ----
+ // ---- Core ask function ----
  async function askQuestion(question) {
    if (!question || isSending) return;
 
-   if (landingView.style.display !== "none") switchToChat();
-
+   openChat();
    addMessage(question, true);
    setSending(true);
    const loadingEl = addLoadingBubble();
@@ -218,7 +393,7 @@
    }
  }
 
- // ---- Send button / Enter (landing page prompt form) ----
+ // ---- Landing page submit ----
  promptForm.addEventListener("submit", (e) => {
    e.preventDefault();
    const question = promptInput.value.trim();
@@ -226,24 +401,27 @@
    askQuestion(question);
  });
 
- // ---- Send button (chat view) ----
+ // ---- Chat input send ----
  sendChat.addEventListener("click", () => {
    const question = chatInput.value.trim();
    chatInput.value = "";
    askQuestion(question);
  });
 
- // ---- Enter key in chat input ----
  chatInput.addEventListener("keydown", (e) => {
-   if (e.key === "Enter") sendChat.click();
+   if (e.key === "Enter" && !isSending) sendChat.click();
  });
 
- // ---- New chat / brand link resets to landing ----
- newChatBtn.addEventListener("click", resetToLanding);
+ // ---- Close chat ----
+ chatNewBtn.addEventListener("click", closeChat);
  brandHome.addEventListener("click", (e) => {
    e.preventDefault();
-   resetToLanding();
+   closeChat();
  });
- </script>
+ chatBrandHome.addEventListener("click", (e) => {
+   e.preventDefault();
+   closeChat();
+ });
+</script>
 </body>
 </html>

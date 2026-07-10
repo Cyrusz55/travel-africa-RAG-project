@@ -1,10 +1,13 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import pandas as pd
 from backend.rag_pipeline import ask_question
 from backend.vector_store import create_embeddings
 import os
+from pathlib import Path
 
 app = FastAPI(title="Travel Africa RAG API")
 
@@ -15,15 +18,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Serve static files
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 class Question(BaseModel):
     question: str
 
 class TripPlan(BaseModel):
     preferences: str
 
-@app.get("/")
-def health():
-    return {"status": "ok", "message": "Travel Africa API running"}
+@app.get("/", response_class=HTMLResponse)
+def serve_frontend():
+    return Path("templates/index.html").read_text(encoding="utf-8")
 
 @app.post("/upload-data")
 def upload_data():

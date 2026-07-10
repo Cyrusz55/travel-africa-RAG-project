@@ -1,25 +1,50 @@
-import chromadb
+import os
 from openai import OpenAI
 from dotenv import load_dotenv
-import os
+from chromadb.utils.embedding_functions import ONNXMiniLM_L6_V2
+from database.db_connection import get_engine
 
-load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".secrets"))
+load_dotenv(".secrets")
 
-CHROMA_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "chroma_db")
+emb_fn = ONNXMiniLM_L6_V2()
+
+
+def _vec_to_str(vector):
+    return "[" + ",".join(str(x) for x in vector) + "]"
+
 
 def ask_question(question: str, api_key: str = None):
     if api_key is None:
         api_key = os.getenv("DEEPSEEK_API_KEY")
 
-    client = chromadb.PersistentClient(path=CHROMA_PATH)
-    collection = client.get_collection(name="hotels")
-    results = collection.query(query_texts=question, n_results=5)
+    query_vector = emb_fn([question])[0]
+    vector_str = _vec_to_str(query_vector)
+
+    engine = get_engine()
+    raw_conn = engine.raw_connection()
+
+    try:
+        with raw_conn.cursor() as cur:
+            cur.execute(
+                """
+                select name, location, description, price_range, website,
+                       1 - (embedding <=> %s::vector) as similarity
+                from hotels
+                order by embedding <=> %s::vector
+                limit 5
+                """,
+                (vector_str, vector_str),
+            )
+            rows = cur.fetchall()
+    finally:
+        raw_conn.close()
 
     context = ""
     sources = []
-    for i, doc in enumerate(results['documents'][0]):
-        context += f"--Hotel {i + 1} --\n{doc}\n\n"
-        sources.append(results['metadatas'][0][i])
+    for i, row in enumerate(rows):
+        name, location, description, price_range, website = row[0], row[1], row[2], row[3], row[4]
+        context += f"--Hotel {i + 1} --\nName: {name}\nLocation: {location}\nDescription: {description}\n\n"
+        sources.append({"hotel_name": name, "location": location})
 
     if api_key:
         client_llm = OpenAI(api_key=api_key, base_url="https://api.deepseek.com")
