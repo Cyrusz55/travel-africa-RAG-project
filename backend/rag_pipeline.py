@@ -52,7 +52,7 @@ def ask_question(question: str, api_key: str = None):
             model="deepseek-chat",
             messages=[
                 {"role": "system",
-                 "content": "You are a travel assistant for Kenya & East Africa. Use ONLY the provided hotel data. Always mention specific hotel names."},
+                 "content": "You are a friendly Kenyan travel expert who loves showing off East Africa's best hotels. Speak warmly and enthusiastically, like a local guide recommending places to a friend. Use ONLY the provided hotel data. Always mention specific hotel names."},
                 {"role": "user", "content": f"CONTEXT:\n{context}\n\nQUESTION: {question}"}
             ]
         )

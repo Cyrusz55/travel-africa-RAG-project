@@ -25,31 +25,36 @@ def create_embeddings():
     raw_conn = engine.raw_connection()
     try:
         with raw_conn.cursor() as cur:
-            for _, row in df.iterrows():
+            total = len(df)
+            for i, (_, row) in enumerate(df.iterrows(), 1):
+                if i % 500 == 0:
+                    print(f"  {i}/{total} hotels embedded...")
+
                 doc_text = f"""Hotel Name: {row['Hotel Name']}
-Location: {row['Location']}, {row['County or Region']}, {row['Country']}
-Description: {row['Hotel Description']}
-Amenities: {row['Amenities']}
-Contact Information: {row['Contact Information']}""".strip()
+                Location: {row['Location']}, {row['Country']}
+                Description: {row['Hotel Description']}
+                Amenities: {row['Amenities']}
+                Rating: {row['Rating']}
+                Contact Information: {row['Contact Information']}""".strip()
 
                 vector = emb_fn([doc_text])[0]
                 vector_str = _vec_to_str(vector)
 
                 cur.execute(
-                    """
-                    insert into hotels (name, location, county_region, country,
-                        description, price_range, amenities, category, contact, website, embedding)
-                    values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s::vector)
-                    """,
+                     """
+    insert into hotels (name, location, country,
+        description, price_range, amenities, category, rating, contact, website, embedding)
+    values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s::vector)
+    """,
                     (
                         row["Hotel Name"],
                         row["Location"],
-                        row["County or Region"],
                         row["Country"],
                         row["Hotel Description"],
                         row["Price Range"],
                         row["Amenities"],
                         row["Hotel Category"],
+                        row["Rating"],
                         row["Contact Information"],
                         row["Website URL"],
                         vector_str,

@@ -9,12 +9,12 @@ class Hotel(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
     location = Column(String, nullable=False)
-    county_region = Column(String, nullable=True)
     country = Column(String, nullable=True)
     description = Column(Text, nullable=True)
     price_range = Column(String, nullable=True)
     amenities = Column(Text, nullable=True)
     category = Column(String, nullable=True)
+    rating = Column(String, nullable=True)
     contact = Column(Text, nullable=True)
     website = Column(String, nullable=True)
     embedding = Column(String, nullable=True)  # stored as text like "[0.12, 0.34, ...]"

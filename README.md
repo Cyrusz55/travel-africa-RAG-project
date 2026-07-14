@@ -293,13 +293,13 @@ create index if not exists hotels_embedding_idx
 **6. Run the application**
 
 ```bash
-uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn backend.main:app --reload
 ```
 
 **7. Upload hotel data to the vector database**
 
 ```bash
-curl -X POST http://localhost:8000/upload-data
+curl.exe -X POST http://localhost:8000/upload-data
 ```
 
 Allow 30–120 seconds for embedding generation.
